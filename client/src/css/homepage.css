@@ -1,0 +1,20 @@
+#addressWrap{
+    display: flex;
+    height: 100%;
+    flex-flow: row wrap;
+}
+.dispoul{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+#dispolist {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+#dispolist > h2 {
+    font-weight: 300;
+    text-align: center;
+
+}

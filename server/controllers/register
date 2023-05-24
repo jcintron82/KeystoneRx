@@ -1,0 +1,97 @@
+var express = require("express");
+var router = express.Router();
+const User = require("../models/User");
+
+const { Client } = require('square');
+const client = new Client({
+  accessToken: 'EAAAEBWe8Cnix2XZ9aoTzgOp4gG9cCOrj3HTaRHiM6zJB5kVuC5AhViN8HseCuWO',
+  environment: 'sandbox', // Replace with 'production' if using production Square APIs
+});
+
+const customerBillingInfo = {
+  family_name: "Doe",
+  idempotency_key: "key",
+  email_address: "user@email.com",
+  given_name: "John"
+}
+module.exports = {
+  postUser: async (req, res) => {
+    // try {
+    //   // await User.create({
+    //   //   firstName: req.body.firstName,
+    //   //   lastName: req.body.lastName,
+    //   //   userName: req.body.username,
+    //   //   password: req.body.password,
+    //   // });
+    //   const response = await client.customersApi.createCustomer({
+    //     idempotencyKey: 'key',
+    //     givenName: 'John',
+    //     familyName: 'Doe',
+    //     emailAddress: 'user@email.com'
+    //   });
+    //   const data = await post.json()
+    //   console.log(response.result)
+    //   res.json({ test:"TEST"});
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    try {
+      const response = await client.subscriptionsApi.createSubscription({
+        locationId: 'LB6CVP78EY0TH',
+        planId: 'ARZENHLANAGUXLTFG3WQIJ3C',
+        customerId: 'DJ2GC9PQYSWXRZ7Z54DJQ5BCFR'
+      });
+    
+      console.log(response.result);
+    } catch(error) {
+      console.log(error);
+    }
+    // try {
+    //   const response = await client.catalogApi.upsertCatalogObject({
+    //     idempotencyKey: 'f9fe0880-f04f-4b33-9e1c-3c92b810b1bb',
+    //     object: {
+    //       type: 'ITEM',
+    //       id: '#plan',
+    //       itemData: {
+    //         name: 'Plan',
+    //         description: 'Training Box Plans',
+    //         abbreviation: 'Box',
+    //         variations: [
+    //           {
+    //             type: 'ITEM_VARIATION',
+    //             id: '#upfront-plan',
+    //             itemVariationData: {
+    //               itemId: '#plan',
+    //               name: '6 Month',
+    //               pricingType: 'FIXED_PRICING',
+    //               priceMoney: {
+    //                 amount: 300,
+    //                 currency: 'USD'
+    //               }
+    //             }
+    //           },
+    //           {
+    //             type: 'ITEM_VARIATION',
+    //             id: '#monthly-plan',
+    //             itemVariationData: {
+    //               itemId: '#plan',
+    //               name: 'Monthly',
+    //               pricingType: 'FIXED_PRICING',
+    //               priceMoney: {
+    //                 amount: 50,
+    //                 currency: 'USD'
+    //               }
+    //             }
+    //           }
+    //         ]
+    //       }
+    //     }
+    //   });
+    
+    //   console.log(response.result);
+    //   res.json({message:response.result.catalogObject, text:'TEXT'})
+    // } catch(error) {
+    //   res.send(error);
+    // }
+  },
+};
