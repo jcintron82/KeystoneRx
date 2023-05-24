@@ -114,7 +114,7 @@ app.listen(8000, () => {
   console.log("Server is running on port 8000");
 });
 app.use(express.json());
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer');
 const delayInMinutes = 60;
 const scrapeData = {
 };
@@ -177,11 +177,14 @@ for (let i = 0; i < elements.length; i++) {
 return scrapeData;
 
 }
-scrape();
-// setTimeout( async () => {
-//   const updatedData = await scrape();
-//   scrapeData = updatedData;
-// }, delayInMinutes * 60 * 1000);
+
+setTimeout( async () => {
+  const updatedData = await scrape();
+  scrapeData = updatedData;
+}, delayInMinutes * 60 * 1000);
+
+
+
 
 app.get('/scrape', async (req, res) => {
   const info = await dispoModel.findOne({

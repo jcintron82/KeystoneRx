@@ -3,7 +3,7 @@ import React from "react";
 import "../css/root.css";
 import "../css/dark.css";
 import "../css/homepage.css";
-import { useState } from "react";
+import { useState, useRef } from "react";
 //Component Imports
 import { Header } from './secondary/header.js'
 
@@ -15,23 +15,57 @@ export const DispensaryList = () => {
     links: [],
   });
   const [scraped, setScraped] = useState(false);
+  const selectedMenuIndex = useRef(null);
 
   async function scrape() {
-    const pull = await fetch("http://localhost:8000/scrape");
-    const data = await pull.json();
-    console.log(data);
-    setDispoList(data.scrapeData);
-    setDispensaryInformation({
-      names: data.scrapeData.name,
-      links: data.scrapeData.links,
-      addresses: data.scrapeData.address,
-    });
+    try{
+      const pull = await fetch("http://localhost:8000/scrape");
+      const data = await pull.json();
+      console.log(data);
+      setDispoList(data.scrapeData);
+      setDispensaryInformation({
+        names: data.scrapeData.name,
+        links: data.scrapeData.links,
+        addresses: data.scrapeData.address,
+      });
+    }
+    catch(err){
+      console.log(err)
+    }
   }
+  //Prevents the component from infinitely re-rendering on mount
   if (!scraped) {
     scrape();
     setScraped(true);
     console.log(scraped);
   }
+
+  async function viewDispensaryMenu(index, e) {
+    e.preventDefault();
+    const dispensaryInfo = {
+      link:dispensaryInformation.links[index]
+    }
+    try{
+      const postDispoName = await fetch("http://localhost:8000/viewmenu", {
+         method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dispensaryInfo)
+        
+        
+      })
+      console.log(postDispoName)
+      console.log(dispensaryInformation.links[index])
+      const getDispoMenu =  await fetch("http://localhost:8000/viewmenu")
+      const finalData = await getDispoMenu.json();
+      console.log(finalData)
+    }
+    catch(err){
+      console.log(err)
+    }
+  
+  };
   return (
     <body>
       <a className="skip" aria-label="skip to main content" href="#main">
@@ -42,7 +76,7 @@ export const DispensaryList = () => {
       <!--                 Navigation                   -->
       <!-- ============================================ --> */}
 
-     <Header updateUserList={setDispensaryInformation()} dispensaryList={dispensaryInformation}/>
+     <Header  dispensaryList={dispensaryInformation}/>
 
       <main id="main">
         {/* <!-- ============================================ -->
@@ -158,7 +192,7 @@ export const DispensaryList = () => {
                   const link = dispensaryInformation.links[index];
                   const address = dispensaryInformation.addresses[index];
                   return (
-                    <li key={index} id='dispolist'>
+                    <li onClick={(e) => viewDispensaryMenu(index, e)} key={index} id='dispolist'>
                       <a href={link}><h1>{dispensaryName}</h1></a>
                       <br></br>
                       <h2>{address}</h2>
