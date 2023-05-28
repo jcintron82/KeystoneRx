@@ -17,29 +17,22 @@ const flash = require("express-flash");
 const logger = require("morgan");
 const connectDB = require("./config/database");
 const mainRoutes = require("./routes/main");
-const profileRoutes = require("./routes/profile");
 const cookieParser = require("cookie-parser");
 const dispoModel = require("./models/dispensariesmodel");
+const menuModel = require("./models/menumodel");
 // const postRoutes = require("./routes/posts");
 
 app.use(function (req, res, next) {
-
-  // Website you wish to allow to connec
-  // res.setHeader('Access-Control-Allow-Origin', 'https://paper-planes-travel-platform.vercel.app');
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
   // Request headers you wish to allow
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
   res.setHeader('Access-Control-Allow-Credentials', true);
-
   // Pass to next layer of middleware
-
-next() })
+  next() })
 app.use(function(req, res, next) {
   // res.header("Access-Control-Allow-Origin", "*");
   const allowedOrigins = ['*'];
@@ -98,8 +91,6 @@ app.use(
 app.use(passport.authenticate('session'));
 app.use(cookieParser("secretcode"))
 
-//Use flash messages for errors, info, ect...
-
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
@@ -115,57 +106,38 @@ app.listen(8000, () => {
 });
 app.use(express.json());
 const puppeteer = require('puppeteer');
-const delayInMinutes = 60;
 const scrapeData = {
 };
+
+//----Puppeteer code to scrape websites once per day and update the database with results----//
+const websiteLinks = [];
 async function scrape() {
+  console.log("SCRAPING DISPOS....")
+  //Establishing connection to the parent website 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://pastrainfinder.com/bin/findStrain?page=dispensaries');
-
-  // Wait for the primary buttons to appear
-  // await page.waitForSelector('.primary-button');
-
-  // Click the "YES" button
-  // await page.click('.primary-button');
-
   await page.waitForSelector('.evenrow');
-
-
-  // Take a screenshot of the page
-  await page.screenshot({ path: 'screenshot.png' });
-
- // Extract address and location name elements
- const centerElements = await page.$$('td center');
-
- // Extract addresses and location names
- const addresses = [];
-const dispensaryNames = [];
-
-const elements = await page.$$eval('tr td center a', anchors => anchors.map(a => a.textContent));
-for (let i = 0; i < elements.length; i++) {
+  const elements = await page.$$eval('tr td center a', anchors => anchors.map(a => a.textContent));
+  // Extracting addresses, dispensary names and links
+  const addresses = [];
+  const dispensaryNames = [];
+  const links = await page.$$eval('tr td:nth-of-type(2) center a', (elements) =>
+  elements.map((element) => element.href)
+);
+  //This loop is here so we are sure to extract all described html blocks
+  for (let i = 0; i < elements.length; i++) {
   if (i % 2 === 0) {
-    // Extract dispensary name
     dispensaryNames.push(elements[i]);
     const addressSelector = 'tr td:nth-of-type(5) center';
     const addressElements = await page.$$(addressSelector);
     const address = await page.evaluate(element => element.textContent.trim(), addressElements[i / 2]);
     addresses.push(address);
-  } else if (i  % 8 === 0){
-    // Extract addres
-    
   }
-}
-
-  // Get the text content of the page
-  const textContent = await page.evaluate(() => document.body.innerText);
-  const links = await page.$$eval('table#datatable a', elements => {
-    return elements.map(link => link.href);
-  });
-  // console.log(textContent)
-  console.log(addresses);
+  websiteLinks.push(links);
+} 
   await browser.close();
-  await dispoModel.updateOne({
+  const dispoList = await dispoModel.updateOne({
         _id: '646c397913eab050d4b33d4d'
 }, {
     $set: {
@@ -173,22 +145,60 @@ for (let i = 0; i < elements.length; i++) {
       links: links,
       address: addresses
     }
-})
+});
+scrapeWebsites();
 return scrapeData;
-
 }
 
-setTimeout( async () => {
-  const updatedData = await scrape();
-  scrapeData = updatedData;
+async function scrapeWebsites() {
+  console.log("SCRAPING WEBSITES....")
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  const menuInfo = [];
+  await menuModel.deleteMany({})
+  .then(async () => {
+    console.log('Deleting collection...')});
+  for (let i = 0; i < websiteLinks[0].length; i++){
+    console.log("Scraping website:",  websiteLinks[0][i]);
+    await page.goto(websiteLinks[0][i]);
+    await page.waitForSelector('tr');
+    const strainElements = await page.$$eval('tr td:nth-child(2) a', anchors => anchors.map(a => a.textContent.trim()));
+    const classificationElements = await page.$$eval('tr td:nth-child(3) center', elements => elements.map(e => e.textContent.trim()));
+    const productForm = await page.$$eval('tr td:nth-child(4) center', anchors => anchors.map(a => a.textContent.trim()));
+    const productSubForm = await page.$$eval('tr td:nth-child(5) center', anchors => anchors.map(a => a.textContent.trim()));
+    const productTHC = await page.$$eval('tr td:nth-child(6) center', elements => elements.map(e => e.textContent.trim()));
+    const productQty = await page.$$eval('tr td:nth-child(8) center', anchors => anchors.map(a => a.textContent.trim()));
+    const productPrice = await page.$$eval('tr td:nth-child(9) center', elements => elements.map(e => e.textContent.trim()));
+  //Creating a new object for each item listed in the HTML
+  for (let i = 0; i < strainElements.length; i++) {
+    const newProductObj =  {
+        strainName: strainElements[i],
+        sativaIndica: classificationElements[i],
+        form: productForm[i],
+        subForm: productSubForm[i],
+        THC: productTHC[i],
+        qty: productQty[i],
+        price:productPrice[i],
+    };
+    menuInfo.push(newProductObj);
+  }
+  //Deleting and recreating VS. updating the menus here because this if
+  //a menu is added or taken off our main source, the databse will reflect that
+  await menuModel.create({
+    menu:menuInfo,
+    link:websiteLinks[0][i],
+})
+
+  menuInfo.splice(0)
+}};
+const delayInMinutes = 1440;
+setTimeout(() => {
+  scrape();
 }, delayInMinutes * 60 * 1000);
-
-
-
 
 app.get('/scrape', async (req, res) => {
   const info = await dispoModel.findOne({
     _id: '646c397913eab050d4b33d4d'
-})
+});
   res.json({scrapeData:info})
 })

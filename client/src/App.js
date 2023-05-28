@@ -1,7 +1,10 @@
-import { Home } from './components/home'
+import { DispensaryList } from './components/main/dispensarylist';
+
 function App() {
+
   return (
-    <Home />
+        <DispensaryList />
+    
   );
 }
 

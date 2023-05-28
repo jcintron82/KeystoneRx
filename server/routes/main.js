@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { ensureAuth } = require("../middleware/auth");
-const authController = require("../controllers/auth");
-const scrapeController = require("../controllers/scrapeController");
 const menuController = require("../controllers/viewmenu");
 const registerController = require("../controllers/register");
 
@@ -49,7 +46,7 @@ router.post('/logout', function(req, res, next) {
 
 
 router.post("/register", registerController.postUser);
-router.post("/scrape", scrapeController.getScrape);
+// router.post("/scrape", scrapeController.getScrape);
 router.post("/viewmenu", menuController.postChoice);
 router.get("/viewmenu", menuController.getMenu);
 module.exports = router;

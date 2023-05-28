@@ -1,7 +1,9 @@
 #addressWrap{
     display: flex;
     height: 100%;
-    flex-flow: row wrap;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
 }
 .dispoul{
     display: flex;
@@ -16,5 +18,21 @@
 #dispolist > h2 {
     font-weight: 300;
     text-align: center;
+    padding-top: 1rem;
+}
 
+@media(min-width:800px){
+    .dispoul{
+        width: 90%;
+    }
+    #dispolist{
+        justify-content: space-between;
+        padding: .5rem;
+    }
+    #dispolist > h2 {
+        text-align: left;
+        width: 65%;
+        padding-top: 0;
+
+    }
 }

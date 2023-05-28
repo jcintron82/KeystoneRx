@@ -11,7 +11,7 @@ export function Header({ dispensaryList, updateUserList }) {
       const sortedDispensaries = dispensaryList.names.filter((dispensary) => {
         return dispensary.toLowerCase().startsWith(e.target.value.toLowerCase());
       });
-      updateUserList();
+      // updateUserList();
       console.log(sortedDispensaries)
     };
     const hamburgerClick = () => {
@@ -61,7 +61,7 @@ export function Header({ dispensaryList, updateUserList }) {
             </a>
           </li>
           <li>
-            <a onClick={navigate('/dispensaries')}>Dispensaries</a>
+            <a onClick={() => navigate('/dispensaries')}>Dispensaries</a>
           </li>
           {/* <li>
               <a href="/reviews.html">Reviews</a>

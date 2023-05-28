@@ -939,3 +939,18 @@ video{
     background: #061623;
   }
 }
+.categories-bar{
+  font-size: 0.875em;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+    width: auto;
+    line-height: 3.57142857em;
+    height: 3.57142857em;
+    text-align: center;
+    padding: 0 2.14285714em;
+    position: relative;
+    z-index: 1;
+    background-color: transparent;
+}

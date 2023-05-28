@@ -1,44 +1,60 @@
-import "../css/critical.css";
-import "../css/root.css";
-import "../css/local.css";
-import "../css/dark.css";
-import girlDogHero from "../images/dog-girl-hero.avif";
-import { useState, useRef } from "react";
-import { useNavigate } from 'react-router-dom';
-import BasicModal from "./MUI/modal.js";
-import Input from "./secondary/input";
+import { useState } from "react";
+import * as React from "react";
+import { Header } from '../secondary/header'
+import { Footer } from '../secondary/footer'
+import Box from "@mui/material/Box";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+// import RestoreIcon from '@mui/icons-material/Restore';
+// import FavoriteIcon from '@mui/icons-material/Favorite';
+// import LocationOnIcon from '@mui/icons-material/LocationOn';
 
-export const Home = () => {
+export function Menu() {
+  const [value, setValue] = useState(0);
+  const [dispensaryMenu, setDispensaryMenu] = useState({
+    flower: [],
+    concentrate: [],
+    carts: [],
+  });
+  const [selectedCategory, setSelectedCategory] = useState("Flower");
+  const [scraped, setScraped] = useState(false);
 
-  const emailRef = useRef();
-  const navigate = useNavigate();
+  async function retrieveScrapeResults() {
+    const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
+    const finalData = await getDispoMenu.json();
+    console.log(finalData);
+    const flower = finalData.scrapedMenuText.menu.filter(
+      (item) => item.form === "Flower"
+    );
+    const concentrate = finalData.scrapedMenuText.menu.filter(
+      (item) => item.form === "Concentrate"
+    );
+    const carts = finalData.scrapedMenuText.menu.filter(
+      (item) => item.form === "Cartridge"
+    );
+    setDispensaryMenu({
+      flower: flower,
+      concentrate: concentrate,
+      carts: carts,
+    });
+  }
 
+  async function categorizeItems() {
+    console.log(dispensaryMenu);
+  }
 
-
-  const updateRefs = (e) => {
-    emailRef.current.value = e.target.value;
-    console.log(emailRef.current.value);
-  };
- 
-  // const handleLoginFormClose = () => {
-  //   setLoginOpen(false);
-  // };
-  
+  if (!scraped) {
+    retrieveScrapeResults();
+    setScraped(true);
+    console.log(scraped);
+  }
   return (
     <body>
-      {/* <BasicModal
-        open={loginOpen}
-        closeModal={handleLoginFormClose}
-      />
-      <a className="skip" aria-label="skip to main content" href="#main">
-        Click To Skip To Main Content
-      </a> */}
-
       {/* <!-- ============================================ -->
       <!--                 Navigation                   -->
       <!-- ============================================ --> */}
 
-    
+      <Header />
 
       <main id="main">
         {/* <!-- ============================================ -->
@@ -48,24 +64,30 @@ export const Home = () => {
         <section id="hero">
           <div className="hero-content">
             <div className="heroText">
-              <h1 id="home-h">
-                <label className="hero-input">
-                  <input
-                    onChange={(e) => updateRefs(e)}
-                    ref={emailRef}
-                    placeholder="email"
-                  ></input>
-                </label>
-              </h1>
+              <h1 id="home-h"></h1>
               <p></p>
-              <a
-                className="button-solid"
-                href="/contact.html"
-                target="_blank"
-                rel="noopener"
-              >
-                Train Your Dog
-              </a>
+              <Box className="categories-bar" sx={{ width: 500 }}>
+                <BottomNavigation
+                  showLabels
+                  // value={value}
+                  onChange={(event, newValue) => {
+                    setValue(newValue);
+                  }}
+                >
+                  <BottomNavigationAction
+                    label="Flower"
+                    onClick={() => setSelectedCategory("Flower")}
+                  />
+                  <BottomNavigationAction
+                    label="Concentrates"
+                    onClick={() => setSelectedCategory("Concentrates")}
+                  />
+                  <BottomNavigationAction
+                    label="Carts"
+                    onClick={() => setSelectedCategory("Carts")}
+                  />
+                </BottomNavigation>
+              </Box>
             </div>
           </div>
           <picture>
@@ -77,14 +99,14 @@ export const Home = () => {
                 media="(min-width: 601px)"
                 srcset="/images/stock1.jpg"
               ></source>  */}
-            <img
+            {/* <img
               aria-hidden="true"
               decoding="async"
               src={girlDogHero}
               alt="new home"
               width="275"
               height="132"
-            ></img>
+            ></img> */}
           </picture>
         </section>
 
@@ -93,56 +115,45 @@ export const Home = () => {
           <!-- ============================================ --> */}
 
         <section id="services" className="services">
-          <div className="card">
-            <picture>
-              {/* <img
-                  aria-hidden="true"
-                  decoding="async"
-                  src="/images/service11.svg"
-                  alt="appliance"
-                  width="48"
-                  height="48"
-                ></img> */}
-            </picture>
-            <h2>Web Design</h2>
-            <p>
-              Design services geared specifically towards your business's
-              customer base.
-            </p>
+          <button onClick={retrieveScrapeResults}>Retrieve Results</button>
+          <div>
+            {selectedCategory === "Flower" ? (
+              <div>
+                {dispensaryMenu.flower
+                  .sort((a, b) => a.strainName.localeCompare(b.strainName))
+                  .map((item) => {
+                    return (
+                      <ul key={item.strainName}>
+                        <li>
+                          {item.strainName} {item.form}
+                          {item.qty}
+                          {item.price}
+                          {item.THC}
+                          {item.price}
+                        </li>
+                      </ul>
+                    );
+                  })}
+              </div>
+            ) : null}
           </div>
-          <div className="card">
-            <picture>
-              {/* <img
-                  aria-hidden="true"
-                  decoding="async"
-                  src="/images/development.svg"
-                  alt="appliance"
-                  width="48"
-                  height="48"
-                ></img> */}
-            </picture>
-            <h2>Web Development</h2>
-            <p>
-              Bringing those curated designs to life with performant websites
-              that not only look the part, but function seamlessly.
-            </p>
+          <div>
+            {selectedCategory === "Concentrates" ? (
+              <div>
+                {dispensaryMenu.concentrate.map((item) => {
+                  return item.strainName;
+                })}
+              </div>
+            ) : null}
           </div>
-          <div className="card">
-            <picture>
-              {/* <img
-                  aria-hidden="true"
-                  decoding="async"
-                  src="/images/grid.svg"
-                  alt="appliance"
-                  width="48"
-                  height="48"
-                ></img> */}
-            </picture>
-            <h2>App Development</h2>
-            <p>
-              Business software or the next Flappy Bird game - let us provide
-              solutions for your complex problems.
-            </p>
+          <div>
+            {selectedCategory === "Carts" ? (
+              <div>
+                {dispensaryMenu.carts.map((item) => {
+                  return item.strainName;
+                })}
+              </div>
+            ) : null}
           </div>
         </section>
 
@@ -306,97 +317,9 @@ export const Home = () => {
       <!--                     FOOTER                   -->
       <!-- ============================================ --> */}
 
-      <footer id="footer">
-        <div className="container">
-          <div className="left-section">
-            <a className="logo" href="/index.html">
-              {/* <img
-                  loading="lazy"
-                  decoding="async"
-                  src="/images/lightlogo2.svg"
-                  alt="logo"
-                  width="264"
-                  height="78"
-                ></img> */}
-            </a>
-            {/* <!-- <p>
-                      Extra content if you need it, if not you can delete this whole p tag. I usually do.
-                  </p> --> */}
-          </div>
-          <div className="right-section">
-            <div className="lists">
-              <ul>
-                <li>
-                  <h2>Information</h2>
-                </li>
-                <li>
-                  <a href="/index.html">Home</a>
-                </li>
-                <li>
-                  <a href="/about.html">About Us</a>
-                </li>
-                <li>
-                  <a href="/projects.html">Our Work</a>
-                </li>
-                <li>
-                  <a href="/testimonials.html">Reviews</a>
-                </li>
-                <li>
-                  <a href="/contact.html">Contact</a>
-                </li>
-              </ul>
-              <ul>
-                <li>
-                  <h2>Services</h2>
-                </li>
-                <li>Web Design</li>
-                <li>Web Development</li>
-                <li>Application Development</li>
-                <li>Service5</li>
-              </ul>
-              <ul>
-                <li>
-                  <h2>Contact</h2>
-                </li>
-                <li>
-                  <a href="/contact.html">
-                    1529 W North A St<br></br>Tampa FL 33606
-                  </a>
-                </li>
-                <li>
-                  <a href="tel:555-779-4407">T: (555) 779-4407</a>
-                </li>
-                <li>
-                  <a href="mailto:sunbaydesigns@gmail.com">
-                    Email: sunbaydesigns@gmail.com
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="credit">
-          <span>Designed and Hand Coded by</span>
-          <a href="#" target="_blank" rel="noopener">
-            Sun Bay Web Design
-          </a>
-          <span className="copyright"> Copyright 2023 - Present</span>
-        </div>
-      </footer>
-
-      {/* <script defer>
-          document.addEventListener('scroll', (e) => { 
-              const scroll = document.documentElement.scrollTop;
-              if(scroll >= 100){
-          document.querySelector('body').classList.add('scroll')
-              } else {
-              document.querySelector('body').classList.remove('scroll')
-              }
-          });
-      </script> */}
+     <Footer />
     </body>
   );
-};
+}
 
-export default Home;
+export default Menu;

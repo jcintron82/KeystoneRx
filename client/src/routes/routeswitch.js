@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "../App";
-import { DispensaryList } from "../components/dispensarylist";
-import { Home } from "../components/home";
+import { DispensaryList } from "../components/main/dispensarylist";
+import { Menu } from "../components/main/menupage";
 
 const RouteSwitch = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/dispensaries" element={<DispensaryList />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<App />} />
+        <Route path="/menu" element={<Menu />} />
       </Routes>
     </BrowserRouter>
   );
