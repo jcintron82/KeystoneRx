@@ -1,7 +1,7 @@
 import { useState } from "react";
 import * as React from "react";
-import { Header } from '../secondary/header'
-import { Footer } from '../secondary/footer'
+import { Header } from '../secondary/header';
+import { Footer } from '../secondary/footer';
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
@@ -19,19 +19,29 @@ export function Menu() {
   const [selectedCategory, setSelectedCategory] = useState("Flower");
   const [scraped, setScraped] = useState(false);
 
+  function filterDuplicateItems(itemList, form) {
+    console.log(itemList)
+    const filteredByForm = itemList.filter((item) => item.form === form);
+    const finalItemList = filteredByForm.filter((item) => item.strainName != 'NA').sort((a,b) => {
+      if(a.strainName < b.strainName){
+        return -1
+      }
+      else{
+        return 1
+      };
+    });
+    console.log(filteredByForm)
+  console.log(finalItemList)
+    return finalItemList;
+  }
   async function retrieveScrapeResults() {
     const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
     const finalData = await getDispoMenu.json();
     console.log(finalData);
-    const flower = finalData.scrapedMenuText.menu.filter(
-      (item) => item.form === "Flower"
-    );
-    const concentrate = finalData.scrapedMenuText.menu.filter(
-      (item) => item.form === "Concentrate"
-    );
-    const carts = finalData.scrapedMenuText.menu.filter(
-      (item) => item.form === "Cartridge"
-    );
+    const flower = filterDuplicateItems(finalData.scrapedMenuText.menu, "Flower");
+    const concentrate = filterDuplicateItems(finalData.scrapedMenuText.menu, "Concentrate");
+    const carts = filterDuplicateItems(finalData.scrapedMenuText.menu, "Cartridge");
+    console.log(concentrate)
     setDispensaryMenu({
       flower: flower,
       concentrate: concentrate,
@@ -140,8 +150,18 @@ export function Menu() {
           <div>
             {selectedCategory === "Concentrates" ? (
               <div>
-                {dispensaryMenu.concentrate.map((item) => {
-                  return item.strainName;
+                {dispensaryMenu.concentrate.map((item, index) => {
+                  return ( <ul key={index}>
+                    <li>
+                      {item.strainName}
+                      {item.subForm}
+                      {item.qty}
+                      {item.price}
+                      {item.THC}
+                      {item.price}
+                    </li>
+                  </ul>
+                  );
                 })}
               </div>
             ) : null}
@@ -149,8 +169,18 @@ export function Menu() {
           <div>
             {selectedCategory === "Carts" ? (
               <div>
-                {dispensaryMenu.carts.map((item) => {
-                  return item.strainName;
+                {dispensaryMenu.carts.map((item, index) => {
+                  return ( <ul key={index}>
+                    <li>
+                      {item.strainName} 
+                      {item.qty}
+                      {item.form}
+                      {item.price}
+                      {item.THC}
+                      {item.price}
+                    </li>
+                  </ul>
+                  );
                 })}
               </div>
             ) : null}
