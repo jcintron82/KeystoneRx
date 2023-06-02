@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "./input.js";
+import  BasicModal  from "../MUI/modal.js";
 export function Header({ dispensaryList, updateUserList }) {
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
@@ -22,6 +23,7 @@ export function Header({ dispensaryList, updateUserList }) {
       };
       return (
 <div id="navigation">
+  <BasicModal open={loginOpen} closeModal={() => setLoginOpen(false)}/>
     <div aria-hidden="true" className="background-color-div"></div>
     <div className="container">
         <label>Search

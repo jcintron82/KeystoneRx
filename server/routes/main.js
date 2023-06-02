@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const menuController = require("../controllers/viewmenu");
 const registerController = require("../controllers/register");
-
+const cartController = require("../controllers/cart");
 
 router.post("/postLogin", (req, res, next) => {
   passport.authenticate(
@@ -17,9 +17,7 @@ router.post("/postLogin", (req, res, next) => {
       else {
         req.logIn(user, (err) => {
           if (err) throw err;
-          res.send({ message: "Successfully Authenticated!" });
-          console.log(req.user);
-          console.log(req.signedCookies )
+          res.send({ message: "Credentials Successfully Received! See your requested information below." });
         });
       }
     }
@@ -32,7 +30,7 @@ router.get("/getUser", (req, res) => {
   } else {
     console.log("Bad Auth");
     res.json({ message: "Bad auth" });
-      res.redirect('http://localhost:3000/register');
+    res.redirect('http://localhost:3000/register');
   }
 });
 
@@ -49,4 +47,8 @@ router.post("/register", registerController.postUser);
 // router.post("/scrape", scrapeController.getScrape);
 router.post("/viewmenu", menuController.postChoice);
 router.get("/viewmenu", menuController.getMenu);
+
+router.post("/cartPost", cartController.postCartItem);
+
+
 module.exports = router;

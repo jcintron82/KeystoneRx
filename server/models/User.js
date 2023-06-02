@@ -10,7 +10,32 @@ const UserSchema = new mongoose.Schema({
     type:String,
     required: true,
   },
-  // favoriteAnimals:[String],
+  cart: [
+    {
+      // Cart structure
+      strainName: {
+        type: String,
+        required: true,
+      },
+      form: {
+        type: String,
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+      dispensaryLocation: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  default: [],
 });
 
 // Password hash middleware.

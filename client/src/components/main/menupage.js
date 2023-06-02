@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import * as React from "react";
 import { Header } from '../secondary/header';
 import { Footer } from '../secondary/footer';
+import { Context } from '../../cartcontext';
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
@@ -18,7 +19,9 @@ export function Menu() {
   });
   const [selectedCategory, setSelectedCategory] = useState("Flower");
   const [scraped, setScraped] = useState(false);
+  const contextValue = useContext(Context);
 
+  console.log(contextValue)
   function filterDuplicateItems(itemList, form) {
     console.log(itemList)
     const filteredByForm = itemList.filter((item) => item.form === form);
@@ -51,8 +54,17 @@ export function Menu() {
 
   async function categorizeItems() {
     console.log(dispensaryMenu);
-  }
-
+  };
+function addToCart(menuType, index) {
+  const postToCart = fetch('http://localhost:8000/cartPost', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+      body: JSON.stringify(menuType[index])
+  });
+  console.log(menuType[index]);
+};
   if (!scraped) {
     retrieveScrapeResults();
     setScraped(true);
@@ -134,7 +146,7 @@ export function Menu() {
                   .map((item) => {
                     return (
                       <ul key={item.strainName}>
-                        <li>
+                        <li onClick={(e) => addToCart(e)}>
                           {item.strainName} {item.form}
                           {item.qty}
                           {item.price}
@@ -152,7 +164,7 @@ export function Menu() {
               <div>
                 {dispensaryMenu.concentrate.map((item, index) => {
                   return ( <ul key={index}>
-                    <li>
+                    <li onClick={() => addToCart(dispensaryMenu.concentrate, index)}>
                       {item.strainName}
                       {item.subForm}
                       {item.qty}
@@ -171,7 +183,7 @@ export function Menu() {
               <div>
                 {dispensaryMenu.carts.map((item, index) => {
                   return ( <ul key={index}>
-                    <li>
+                    <li onClick={(e) => addToCart(e)}>
                       {item.strainName} 
                       {item.qty}
                       {item.form}
