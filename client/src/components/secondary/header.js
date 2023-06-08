@@ -5,8 +5,9 @@ import  BasicModal  from "../MUI/modal.js";
 export function Header({ dispensaryList, updateUserList }) {
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
+    const [userCart, setUserCart] = useState([]);
     const navigate = useNavigate();
-
+console.log(userCart)
     function searchDispensaries(e) {
       console.log(e.target.value)
       const sortedDispensaries = dispensaryList.names.filter((dispensary) => {
@@ -69,7 +70,7 @@ export function Header({ dispensaryList, updateUserList }) {
               <a href="/reviews.html">Reviews</a>
             </li> */}
           <li>
-            <a href="/contact.html">Contact</a>
+            <a onClick={() => navigate('/cart')}>View Cart</a>
           </li>
           <li>
             <a onClick={handleLoginForms}>Login</a>
