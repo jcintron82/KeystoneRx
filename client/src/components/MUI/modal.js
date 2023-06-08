@@ -4,8 +4,10 @@ import Button from './button';
 import Typography from '@mui/material/Typography';
 import Input from '../secondary/input';
 import Modal from '@mui/material/Modal';
-import { useRef } from 'react';
+import { useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Context, useCustomContext } from '../../cartcontext';
+
 
 const style = {
   position:'absolute',
@@ -20,10 +22,13 @@ const style = {
   zindex:'999'
 };
 
-export default function BasicModal({ open, closeModal, mainText, secondaryText }) {
+export default function BasicModal({ open, closeModal, displayCart }) {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
+  const context = useContext(Context);
+
   const navigate = useNavigate();
+  
 
   const registerCredentials = {
     username:'',
@@ -71,7 +76,7 @@ export default function BasicModal({ open, closeModal, mainText, secondaryText }
         headers: { "Content-Type": "application/json" },
       });
       const data = await push.json();
-      console.log(data);
+      console.log(context)
     } catch (err) {
       console.log(err);
     }
@@ -96,7 +101,7 @@ export default function BasicModal({ open, closeModal, mainText, secondaryText }
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-          <Button btnText='Register' onClick={closeModal}/>
+          <Button btnText='Register' onClick={registerUser}/>
           <Button btnText='Close' onClick={closeModal}/>
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>

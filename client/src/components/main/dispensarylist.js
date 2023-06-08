@@ -129,13 +129,13 @@ export const DispensaryList = () => {
         <section id="cta">
           {" "}
           <div className="container">
-            <h2 className="title">
-              Curate Your Online Presence <br></br> With Us Today
+            {/* <h2 className="title">
+              Lorem Ipsum <br></br> With Us Today
             </h2>
             <p>Or call us justddd to chat, we won't tell if you don't.</p>
             <a href="/contact.html" className="button-solid">
               Contact Us
-            </a>
+            </a> */}
           </div>
           <picture>
             {" "}

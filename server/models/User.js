@@ -21,15 +21,15 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      quantity: {
-        type: Number,
+      qty: {
+        type: String,
         default: 1,
       },
       price: {
         type: Number,
         required: true,
       },
-      dispensaryLocation: {
+      location: {
         type: String,
         required: true,
       },

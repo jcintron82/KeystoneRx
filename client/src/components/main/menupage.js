@@ -21,9 +21,7 @@ export function Menu() {
   const [scraped, setScraped] = useState(false);
   const contextValue = useContext(Context);
 
-  console.log(contextValue)
   function filterDuplicateItems(itemList, form) {
-    console.log(itemList)
     const filteredByForm = itemList.filter((item) => item.form === form);
     const finalItemList = filteredByForm.filter((item) => item.strainName != 'NA').sort((a,b) => {
       if(a.strainName < b.strainName){
@@ -33,18 +31,14 @@ export function Menu() {
         return 1
       };
     });
-    console.log(filteredByForm)
-  console.log(finalItemList)
     return finalItemList;
   }
   async function retrieveScrapeResults() {
     const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
     const finalData = await getDispoMenu.json();
-    console.log(finalData);
     const flower = filterDuplicateItems(finalData.scrapedMenuText.menu, "Flower");
     const concentrate = filterDuplicateItems(finalData.scrapedMenuText.menu, "Concentrate");
     const carts = filterDuplicateItems(finalData.scrapedMenuText.menu, "Cartridge");
-    console.log(concentrate)
     setDispensaryMenu({
       flower: flower,
       concentrate: concentrate,
@@ -63,12 +57,10 @@ function addToCart(menuType, index) {
     },
       body: JSON.stringify(menuType[index])
   });
-  console.log(menuType[index]);
 };
   if (!scraped) {
     retrieveScrapeResults();
     setScraped(true);
-    console.log(scraped);
   }
   return (
     <body>
@@ -207,15 +199,13 @@ function addToCart(menuType, index) {
           <div className="container">
             <div className="content">
               <h2 className="title">
-                Solving Problems One Line of Code at a Time.
+                Lorem Ipsum
               </h2>
               <p>
-                We're a boutique web development shop specializing in
-                custom-tailored solutions, catering to small businesses and
-                individuals.
+              Lorem Ipsum
               </p>
               <p>
-                <strong>What makes us different</strong>
+                <strong>   Lorem Ipsum</strong>
               </p>
               <ul>
                 <li>
@@ -229,7 +219,7 @@ function addToCart(menuType, index) {
                       height="20"
                     ></img> */}
                   <span>
-                    Competitive-rates. Free estimates. No frills or hidden fees.
+                  Lorem Ipsum
                   </span>
                 </li>
                 <li>
@@ -243,8 +233,7 @@ function addToCart(menuType, index) {
                       height="20"
                     ></img> */}
                   <span>
-                    All of our websites score minimum 98/100 on Google page
-                    speed scoring
+                  Lorem Ipsum
                   </span>
                 </li>
                 <li>
@@ -258,9 +247,7 @@ function addToCart(menuType, index) {
                       height="20"
                     ></img> */}
                   <span>
-                    Real people solving your real problems. No confusing
-                    "no-code" platforms taking your attention away from what
-                    matters most - daily business operations
+                  Lorem Ipsum
                   </span>
                 </li>
                 <li>

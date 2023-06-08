@@ -29,10 +29,10 @@ video{
 }
 @media only screen and (min-width: 0em) {
   :root {
-    --primary: #FFBA19;
-    --primaryShade: #ffd675;
-    --primaryDark: #805d0d;
-    --bodyText: #1a1a1a;
+    --primary: #166534;
+    --primaryShade: #166534;
+    --primaryDark: #166534;
+    --bodyText: white;
   }
   /* roboto-regular - latin */
 

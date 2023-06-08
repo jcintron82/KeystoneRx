@@ -45,7 +45,7 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, UPDATE");
 
   next();
-})
+});
 //Use .env file in config folder
 require("dotenv").config({ path: "./config/.env" });
 
@@ -151,7 +151,7 @@ return scrapeData;
 }
 
 async function scrapeWebsites() {
-  console.log("SCRAPING WEBSITES....")
+  console.log("SCRAPING SOURCE WEBSITE...")
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const menuInfo = [];
@@ -169,6 +169,9 @@ async function scrapeWebsites() {
     const productTHC = await page.$$eval('tr td:nth-child(6) center', elements => elements.map(e => e.textContent.trim()));
     const productQty = await page.$$eval('tr td:nth-child(8) center', anchors => anchors.map(a => a.textContent.trim()));
     const productPrice = await page.$$eval('tr td:nth-child(9) center', elements => elements.map(e => e.textContent.trim()));
+    const shopName = await page.$$eval('tr td:nth-child(12) center', elements => elements.map(e => e.textContent.trim()));
+    const shopLocation = await page.$$eval('tr td:nth-child(13) center', elements => elements.map(e => e.textContent.trim()));
+
   //Creating a new object for each item listed in the HTML
   for (let i = 0; i < strainElements.length; i++) {
     const newProductObj =  {
@@ -179,6 +182,7 @@ async function scrapeWebsites() {
         THC: productTHC[i],
         qty: productQty[i],
         price:productPrice[i],
+        location: shopName[i] + ' - ' + shopLocation[i],
     };
     menuInfo.push(newProductObj);
   }
@@ -195,7 +199,7 @@ const delayInMinutes = 1440;
 setTimeout(() => {
   scrape();
 }, delayInMinutes * 60 * 1000);
-
+scrape();
 app.get('/scrape', async (req, res) => {
   const info = await dispoModel.findOne({
     _id: '646c397913eab050d4b33d4d'
