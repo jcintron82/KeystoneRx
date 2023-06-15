@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "../secondary/header.js";
 import { Footer } from "../secondary/footer.js";
 
-export const DispensaryList = () => {
+export const DispensaryList = ({ updateFunc, selectedDispensary }) => {
   const [searchBarState, setSearchBarState] = useState("");
   const [dispensaryInformation, setDispensaryInformation] = useState({
     names: [],
@@ -42,6 +42,8 @@ export const DispensaryList = () => {
     e.preventDefault();
     const dispensaryInfo = {
       link: dispensaryInformation.links[index],
+      name: dispensaryInformation.names[index],
+      addresses: dispensaryInformation.addresses[index],
     };
     try {
       const postDispoName = await fetch("http://localhost:8000/viewmenu", {
@@ -67,7 +69,7 @@ export const DispensaryList = () => {
       <!--                 Navigation                   -->
       <!-- ============================================ --> */}
 
-      <Header dispensaryList={dispensaryInformation} />
+      <Header dispensaryList={dispensaryInformation} searchBar={true} />
 
       <main id="main">
         {/* <!-- ============================================ -->
