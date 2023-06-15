@@ -171,6 +171,7 @@ async function scrapeWebsites() {
     const productPrice = await page.$$eval('tr td:nth-child(9) center', elements => elements.map(e => e.textContent.trim()));
     const shopName = await page.$$eval('tr td:nth-child(12) center', elements => elements.map(e => e.textContent.trim()));
     const shopLocation = await page.$$eval('tr td:nth-child(13) center', elements => elements.map(e => e.textContent.trim()));
+    const dispensaryName = shopName + shopLocation;
 
   //Creating a new object for each item listed in the HTML
   for (let i = 0; i < strainElements.length; i++) {
@@ -191,15 +192,16 @@ async function scrapeWebsites() {
   await menuModel.create({
     menu:menuInfo,
     link:websiteLinks[0][i],
-})
-
+    dispensaryName: dispensaryName,
+    
+});
   menuInfo.splice(0)
 }};
 const delayInMinutes = 1440;
 setTimeout(() => {
   scrape();
 }, delayInMinutes * 60 * 1000);
-scrape();
+scrape()
 app.get('/scrape', async (req, res) => {
   const info = await dispoModel.findOne({
     _id: '646c397913eab050d4b33d4d'

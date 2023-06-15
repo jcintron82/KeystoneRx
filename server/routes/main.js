@@ -49,6 +49,7 @@ router.post("/viewmenu", menuController.postChoice);
 router.get("/viewmenu", menuController.getMenu);
 
 router.post("/cartPost", cartController.postCartItem);
+router.get("/getCart", cartController.getCart);
 
 
 module.exports = router;

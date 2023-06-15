@@ -1,17 +1,21 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import * as React from "react";
 import { Header } from '../secondary/header';
 import { Footer } from '../secondary/footer';
+import { CartModal } from "../secondary/cartmodal";
 import { Context } from '../../cartcontext';
+import { productHold } from "../secondary/cartmodal";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+export { dispensaryLink, Menu }
 // import RestoreIcon from '@mui/icons-material/Restore';
 // import FavoriteIcon from '@mui/icons-material/Favorite';
 // import LocationOnIcon from '@mui/icons-material/LocationOn';
 
-export function Menu() {
-  const [value, setValue] = useState(0);
+let dispensaryLink = '';
+ function Menu() {
+  const filteredCart = useRef();
   const [dispensaryMenu, setDispensaryMenu] = useState({
     flower: [],
     concentrate: [],
@@ -19,7 +23,9 @@ export function Menu() {
   });
   const [selectedCategory, setSelectedCategory] = useState("Flower");
   const [scraped, setScraped] = useState(false);
-  const contextValue = useContext(Context);
+  const [refreshCart, setRefreshCart] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [cartModal, setCartModal] = useState(false);
 
   function filterDuplicateItems(itemList, form) {
     const filteredByForm = itemList.filter((item) => item.form === form);
@@ -33,6 +39,7 @@ export function Menu() {
     });
     return finalItemList;
   }
+
   async function retrieveScrapeResults() {
     const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
     const finalData = await getDispoMenu.json();
@@ -44,11 +51,13 @@ export function Menu() {
       concentrate: concentrate,
       carts: carts,
     });
+    console.log(finalData)
+    // setDispensaryLocation(finalData[0].location);
+    dispensaryLink = finalData.scrapedMenuText.link;
+    // await createLocationCart()
   }
 
-  async function categorizeItems() {
-    console.log(dispensaryMenu);
-  };
+
 function addToCart(menuType, index) {
   const postToCart = fetch('http://localhost:8000/cartPost', {
     method: "POST",
@@ -57,10 +66,19 @@ function addToCart(menuType, index) {
     },
       body: JSON.stringify(menuType[index])
   });
+  productHold.push(menuType[index]);
+  setRefreshCart(!refreshCart);
 };
   if (!scraped) {
     retrieveScrapeResults();
     setScraped(true);
+  }
+
+  function openCartModal(){
+    setCartModal(!cartModal);
+  }
+  function refresh(){
+    setCartModal(!cartModal);
   }
   return (
     <body>
@@ -68,7 +86,9 @@ function addToCart(menuType, index) {
       <!--                 Navigation                   -->
       <!-- ============================================ --> */}
 
-      <Header />
+      <Header searchBar={false} />
+      <CartModal openCart={cartModal} handleClose={openCartModal} dispensaryLink={dispensaryLink} 
+      updateCartModal={refresh}/>
 
       <main id="main">
         {/* <!-- ============================================ -->
@@ -76,6 +96,7 @@ function addToCart(menuType, index) {
           <!-- ============================================ --> */}
 
         <section id="hero">
+        <button onClick={openCartModal}>Open Cart</button>
           <div className="hero-content">
             <div className="heroText">
               <h1 id="home-h"></h1>
@@ -84,9 +105,9 @@ function addToCart(menuType, index) {
                 <BottomNavigation
                   showLabels
                   // value={value}
-                  onChange={(event, newValue) => {
-                    setValue(newValue);
-                  }}
+                  // onChange={(event, newValue) => {
+                  //   setValue(newValue);
+                  // }}
                 >
                   <BottomNavigationAction
                     label="Flower"

@@ -10,6 +10,10 @@ const MenuSchema = new mongoose.Schema({
     type:String,
     required: true,
   },
+//   releventDispensary: {
+//     type:String,
+//     required: true,
+//   }
   
 
   // favoriteAnimals:[String],
