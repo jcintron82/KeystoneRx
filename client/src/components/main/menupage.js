@@ -51,9 +51,10 @@ let dispensaryLink = '';
       concentrate: concentrate,
       carts: carts,
     });
-    console.log(finalData)
+    console.log(finalData.scrapedMenuText.link)
     // setDispensaryLocation(finalData[0].location);
     dispensaryLink = finalData.scrapedMenuText.link;
+    console.log(dispensaryLink)
     // await createLocationCart()
   }
 
@@ -70,6 +71,7 @@ function addToCart(menuType, index) {
   setRefreshCart(!refreshCart);
 };
   if (!scraped) {
+    console.log('ping')
     retrieveScrapeResults();
     setScraped(true);
   }
@@ -88,7 +90,7 @@ function addToCart(menuType, index) {
 
       <Header searchBar={false} />
       <CartModal openCart={cartModal} handleClose={openCartModal} dispensaryLink={dispensaryLink} 
-      updateCartModal={refresh}/>
+      refreshData={refresh}/>
 
       <main id="main">
         {/* <!-- ============================================ -->
@@ -178,12 +180,11 @@ function addToCart(menuType, index) {
                 {dispensaryMenu.concentrate.map((item, index) => {
                   return ( <ul key={index}>
                     <li onClick={() => addToCart(dispensaryMenu.concentrate, index)}>
-                      {item.strainName}
-                      {item.subForm}
-                      {item.qty}
-                      {item.price}
-                      {item.THC}
-                      {item.price}
+                      {item.strainName + " "}
+                      {item.subForm + " "}
+                      {item.qty + " "}
+                      ${item.price + " "}
+                      {item.THC}% THC
                     </li>
                   </ul>
                   );
@@ -197,12 +198,11 @@ function addToCart(menuType, index) {
                 {dispensaryMenu.carts.map((item, index) => {
                   return ( <ul key={index}>
                     <li onClick={(e) => addToCart(e)}>
-                      {item.strainName} 
-                      {item.qty}
-                      {item.form}
-                      {item.price}
-                      {item.THC}
-                      {item.price}
+                    {item.strainName + " "}
+                      {item.subForm + " "}
+                      {item.qty + " "}
+                      ${item.price + " "}
+                      {item.THC}% THC
                     </li>
                   </ul>
                   );

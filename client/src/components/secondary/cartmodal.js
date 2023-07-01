@@ -26,15 +26,19 @@ const style = {
     overflowY:'auto'
   };
 console.log(productHold)
-export function CartModal({ openCart, handleClose, dispensaryLink, }){
+export function CartModal({ openCart, handleClose, dispensaryLink, refreshData }){
     const [filteredCart, setFilteredCart] = useState([]);
     const [cartStatus, setCartStatus] = useState(false);
     const [refreshCart, setRefreshCart] = useState(false);
     const [shopName, setShopName] = useState('');
     const [shopLocation, setShopLocation] = useState('');
+
+    const cartFinalPrice = filteredCart.reduce((acc, item) => acc + item.price, 0);
+
     async function createLocationCart() {
         console.log(dispensaryLink)
-        if(!cartStatus && dispensaryLink != ''){
+        if(!cartStatus){
+          console.log('YES')
             try {
                 const getSavedCart = await fetch("http://localhost:8000/getCart");
                 const userCart = await getSavedCart.json();
@@ -56,14 +60,14 @@ export function CartModal({ openCart, handleClose, dispensaryLink, }){
                 const filteredUserCart = userCart.userCart.cart.filter((item) => {
                   return item.location === locationStr;
                 });
+                refreshData();
                 setCartStatus(true);
                 return  setFilteredCart(filteredUserCart);
             }
             catch(err){
                 console.log(err)
             }
-        }
-        
+        };
       };
       console.log(filteredCart)
       createLocationCart();
@@ -78,21 +82,22 @@ export function CartModal({ openCart, handleClose, dispensaryLink, }){
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
             <article>
-                <h1>{shopName} - <br></br> {shopLocation}, PA</h1>
+              {console.log(shopName)}
+                <h1>{shopName.replaceAll('%20', " ")} - <br></br> {shopLocation.replaceAll('%20', " ")}, PA</h1>
+                Shop Cart Total: ${cartFinalPrice.toFixed(2)}
                 <ul>
                     {filteredCart.map((item) => {
                         return(
                             <li>
-                                { item.strainName }
-                                { item.form }
-                                { item.qty }
-                                { item.price }
-                                {/* { item.strainName } */}
-                              
+                      {item.strainName + " "}
+                      {item.form + " "}
+                      {item.qty + " "}
+                      ${item.price.toFixed(2) + " "}   
                             </li>
                         )
                     })}
                 </ul>
+ 
             </article>
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
