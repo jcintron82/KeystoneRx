@@ -37,7 +37,10 @@ export function Menu() {
   async function retrieveScrapeResults() {
     const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
     const finalData = await getDispoMenu.json();
+<<<<<<< HEAD
     console.log(finalData);
+=======
+>>>>>>> parent of 34e8c8d (Sql migration (#2))
     const flower = filterDuplicateItems(finalData.scrapedMenuText.menu, "Flower");
     const concentrate = filterDuplicateItems(finalData.scrapedMenuText.menu, "Concentrate");
     const carts = filterDuplicateItems(finalData.scrapedMenuText.menu, "Cartridge");
@@ -47,6 +50,14 @@ export function Menu() {
       concentrate: concentrate,
       carts: carts,
     });
+<<<<<<< HEAD
+=======
+    console.log(finalData.scrapedMenuText.link)
+    // setDispensaryLocation(finalData[0].location);
+    dispensaryLink = finalData.scrapedMenuText.link;
+    console.log(dispensaryLink)
+    // await createLocationCart()
+>>>>>>> parent of 34e8c8d (Sql migration (#2))
   }
 
   async function categorizeItems() {
