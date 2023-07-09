@@ -1,10 +1,13 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import Button from './button';
 import Typography from '@mui/material/Typography';
 import Input from '../secondary/input';
 import Modal from '@mui/material/Modal';
-import { useRef } from 'react';
+import { useRef, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Context, useCustomContext } from '../../cartcontext';
+
 
 const style = {
   position:'absolute',
@@ -19,27 +22,21 @@ const style = {
   zindex:'999'
 };
 
-export default function BasicModal({ open, closeModal, mainText, secondaryText }) {
+export default function BasicModal({ open, closeModal, displayCart }) {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
+  const context = useContext(Context);
 
+  const navigate = useNavigate();
+  
 
-async function Scrape() {
-  const scrape = await fetch('http://localhost:8000/scrape');
-  const data = await scrape.json();
-  console.log(data)
-}
   const registerCredentials = {
     username:'',
     password:''
   };
-  const body2 = {};
   const registerUser = async () => {
-    console.log(usernameRef.current)
     registerCredentials.username = usernameRef.current;
     registerCredentials.password = passwordRef.current;
-    console.log(registerCredentials)
-    console.log("OK")
       try {
           const pull = await fetch("http://localhost:8000/register", {
             method: "POST",
@@ -48,8 +45,6 @@ async function Scrape() {
           });
           const data = await pull.json();
           console.log(data)
-          // navigate('/');
-          // console.log('navigate')
   }
   catch(err){ 
       console.log(err)
@@ -81,8 +76,7 @@ async function Scrape() {
         headers: { "Content-Type": "application/json" },
       });
       const data = await push.json();
-      console.log(data);
-      localStorage.setItem('username', data.message.username);
+      console.log(context)
     } catch (err) {
       console.log(err);
     }
@@ -107,7 +101,8 @@ async function Scrape() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Login
+          <Button btnText='Register' onClick={registerUser}/>
+          <Button btnText='Close' onClick={closeModal}/>
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           <form>
@@ -120,8 +115,7 @@ async function Scrape() {
            <Input onChange={(e) => recordLoginRefs(e, 'password')}  type='password' placeholder="Password" />
          </label>
          </form>
-            <button onClick={postLogin}>Login</button>
-            <button onClick={Scrape}>Register</button>
+         <Button btnText='Login' onClick={postLogin}/>
           </Typography>
         </Box>
       </Modal>

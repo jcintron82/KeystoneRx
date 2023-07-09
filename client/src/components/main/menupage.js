@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useState, useContext, useRef } from "react";
 import * as React from "react";
-import { Header } from '../secondary/header'
-import { Footer } from '../secondary/footer'
+import { Header } from '../secondary/header';
+import { Footer } from '../secondary/footer';
+import { CartModal } from "../secondary/cartmodal";
+import { Context } from '../../cartcontext';
+import { productHold } from "../secondary/cartmodal";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+export { dispensaryLink, Menu }
 // import RestoreIcon from '@mui/icons-material/Restore';
 // import FavoriteIcon from '@mui/icons-material/Favorite';
 // import LocationOnIcon from '@mui/icons-material/LocationOn';
 
-export function Menu() {
-  const [value, setValue] = useState(0);
+let dispensaryLink = '';
+ function Menu() {
+  const filteredCart = useRef();
   const [dispensaryMenu, setDispensaryMenu] = useState({
     flower: [],
     concentrate: [],
@@ -18,35 +23,64 @@ export function Menu() {
   });
   const [selectedCategory, setSelectedCategory] = useState("Flower");
   const [scraped, setScraped] = useState(false);
+  const [refreshCart, setRefreshCart] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [cartModal, setCartModal] = useState(false);
+
+  function filterDuplicateItems(itemList, form) {
+    const filteredByForm = itemList.filter((item) => item.form === form);
+    const finalItemList = filteredByForm.filter((item) => item.strainName != 'NA').sort((a,b) => {
+      if(a.strainName < b.strainName){
+        return -1
+      }
+      else{
+        return 1
+      };
+    });
+    return finalItemList;
+  }
 
   async function retrieveScrapeResults() {
     const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
     const finalData = await getDispoMenu.json();
-    console.log(finalData);
-    const flower = finalData.scrapedMenuText.menu.filter(
-      (item) => item.form === "Flower"
-    );
-    const concentrate = finalData.scrapedMenuText.menu.filter(
-      (item) => item.form === "Concentrate"
-    );
-    const carts = finalData.scrapedMenuText.menu.filter(
-      (item) => item.form === "Cartridge"
-    );
+    const flower = filterDuplicateItems(finalData.scrapedMenuText.menu, "Flower");
+    const concentrate = filterDuplicateItems(finalData.scrapedMenuText.menu, "Concentrate");
+    const carts = filterDuplicateItems(finalData.scrapedMenuText.menu, "Cartridge");
     setDispensaryMenu({
       flower: flower,
       concentrate: concentrate,
       carts: carts,
     });
+    console.log(finalData.scrapedMenuText.link)
+    // setDispensaryLocation(finalData[0].location);
+    dispensaryLink = finalData.scrapedMenuText.link;
+    console.log(dispensaryLink)
+    // await createLocationCart()
   }
 
-  async function categorizeItems() {
-    console.log(dispensaryMenu);
-  }
 
+function addToCart(menuType, index) {
+  const postToCart = fetch('http://localhost:8000/cartPost', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+      body: JSON.stringify(menuType[index])
+  });
+  productHold.push(menuType[index]);
+  setRefreshCart(!refreshCart);
+};
   if (!scraped) {
+    console.log('ping')
     retrieveScrapeResults();
     setScraped(true);
-    console.log(scraped);
+  }
+
+  function openCartModal(){
+    setCartModal(!cartModal);
+  }
+  function refresh(){
+    setCartModal(!cartModal);
   }
   return (
     <body>
@@ -54,7 +88,9 @@ export function Menu() {
       <!--                 Navigation                   -->
       <!-- ============================================ --> */}
 
-      <Header />
+      <Header searchBar={false} />
+      <CartModal openCart={cartModal} handleClose={openCartModal} dispensaryLink={dispensaryLink} 
+      refreshData={refresh}/>
 
       <main id="main">
         {/* <!-- ============================================ -->
@@ -62,6 +98,7 @@ export function Menu() {
           <!-- ============================================ --> */}
 
         <section id="hero">
+        <button onClick={openCartModal}>Open Cart</button>
           <div className="hero-content">
             <div className="heroText">
               <h1 id="home-h"></h1>
@@ -70,9 +107,9 @@ export function Menu() {
                 <BottomNavigation
                   showLabels
                   // value={value}
-                  onChange={(event, newValue) => {
-                    setValue(newValue);
-                  }}
+                  // onChange={(event, newValue) => {
+                  //   setValue(newValue);
+                  // }}
                 >
                   <BottomNavigationAction
                     label="Flower"
@@ -124,7 +161,7 @@ export function Menu() {
                   .map((item) => {
                     return (
                       <ul key={item.strainName}>
-                        <li>
+                        <li onClick={(e) => addToCart(e)}>
                           {item.strainName} {item.form}
                           {item.qty}
                           {item.price}
@@ -140,8 +177,17 @@ export function Menu() {
           <div>
             {selectedCategory === "Concentrates" ? (
               <div>
-                {dispensaryMenu.concentrate.map((item) => {
-                  return item.strainName;
+                {dispensaryMenu.concentrate.map((item, index) => {
+                  return ( <ul key={index}>
+                    <li onClick={() => addToCart(dispensaryMenu.concentrate, index)}>
+                      {item.strainName + " "}
+                      {item.subForm + " "}
+                      {item.qty + " "}
+                      ${item.price + " "}
+                      {item.THC}% THC
+                    </li>
+                  </ul>
+                  );
                 })}
               </div>
             ) : null}
@@ -149,8 +195,17 @@ export function Menu() {
           <div>
             {selectedCategory === "Carts" ? (
               <div>
-                {dispensaryMenu.carts.map((item) => {
-                  return item.strainName;
+                {dispensaryMenu.carts.map((item, index) => {
+                  return ( <ul key={index}>
+                    <li onClick={(e) => addToCart(e)}>
+                    {item.strainName + " "}
+                      {item.subForm + " "}
+                      {item.qty + " "}
+                      ${item.price + " "}
+                      {item.THC}% THC
+                    </li>
+                  </ul>
+                  );
                 })}
               </div>
             ) : null}
@@ -165,15 +220,13 @@ export function Menu() {
           <div className="container">
             <div className="content">
               <h2 className="title">
-                Solving Problems One Line of Code at a Time.
+                Lorem Ipsum
               </h2>
               <p>
-                We're a boutique web development shop specializing in
-                custom-tailored solutions, catering to small businesses and
-                individuals.
+              Lorem Ipsum
               </p>
               <p>
-                <strong>What makes us different</strong>
+                <strong>   Lorem Ipsum</strong>
               </p>
               <ul>
                 <li>
@@ -187,7 +240,7 @@ export function Menu() {
                       height="20"
                     ></img> */}
                   <span>
-                    Competitive-rates. Free estimates. No frills or hidden fees.
+                  Lorem Ipsum
                   </span>
                 </li>
                 <li>
@@ -201,8 +254,7 @@ export function Menu() {
                       height="20"
                     ></img> */}
                   <span>
-                    All of our websites score minimum 98/100 on Google page
-                    speed scoring
+                  Lorem Ipsum
                   </span>
                 </li>
                 <li>
@@ -216,9 +268,7 @@ export function Menu() {
                       height="20"
                     ></img> */}
                   <span>
-                    Real people solving your real problems. No confusing
-                    "no-code" platforms taking your attention away from what
-                    matters most - daily business operations
+                  Lorem Ipsum
                   </span>
                 </li>
                 <li>
