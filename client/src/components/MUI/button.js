@@ -1,11 +1,15 @@
-import * as React from 'react';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import { DispensaryList } from './components/main/dispensarylist';
+import { Context } from './cartcontext';
 
-export default function BasicButtons({ btnText, onClick }) {
+function App() {
+  const value = 'My Context Value';
   return (
-    <Stack spacing={2} direction="row">
-      <Button onClick={onClick} variant="contained">{ btnText }</Button>
-    </Stack>
+    <Context.Provider value={value}>
+       <DispensaryList />
+  </Context.Provider>
+     
+    
   );
 }
+
+export default App;
