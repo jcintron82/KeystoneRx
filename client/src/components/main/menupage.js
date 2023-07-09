@@ -41,20 +41,20 @@ let dispensaryLink = '';
   }
 
   async function retrieveScrapeResults() {
-    const getDispoMenu = await fetch("http://localhost:8000/viewmenu");
+    const getDispoMenu = await fetch("http://localhost:5298/Test");
+    console.log(getDispoMenu)
     const finalData = await getDispoMenu.json();
-    const flower = filterDuplicateItems(finalData.scrapedMenuText.menu, "Flower");
-    const concentrate = filterDuplicateItems(finalData.scrapedMenuText.menu, "Concentrate");
-    const carts = filterDuplicateItems(finalData.scrapedMenuText.menu, "Cartridge");
-    setDispensaryMenu({
-      flower: flower,
-      concentrate: concentrate,
-      carts: carts,
-    });
-    console.log(finalData.scrapedMenuText.link)
-    // setDispensaryLocation(finalData[0].location);
-    dispensaryLink = finalData.scrapedMenuText.link;
-    console.log(dispensaryLink)
+    console.log(finalData)
+    // const flower = filterDuplicateItems(finalData.menu, "Flower");
+    // const concentrate = filterDuplicateItems(finalData.menu, "Concentrate");
+    // const carts = filterDuplicateItems(finalData.menu, "Cartridge");
+    // setDispensaryMenu({
+    //   flower: flower,
+    //   concentrate: concentrate,
+    //   carts: carts,
+    // });
+    // // setDispensaryLocation(finalData[0].location);
+    // dispensaryLink = finalData.link;
     // await createLocationCart()
   }
 
