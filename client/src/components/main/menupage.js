@@ -44,6 +44,7 @@ let dispensaryLink = '';
     const getDispoMenu = await fetch("http://localhost:5298/Test");
     console.log(getDispoMenu)
     const finalData = await getDispoMenu.json();
+<<<<<<< HEAD
     console.log(finalData)
     // const flower = filterDuplicateItems(finalData.menu, "Flower");
     // const concentrate = filterDuplicateItems(finalData.menu, "Concentrate");
@@ -55,6 +56,20 @@ let dispensaryLink = '';
     // });
     // // setDispensaryLocation(finalData[0].location);
     // dispensaryLink = finalData.link;
+=======
+    const flower = filterDuplicateItems(finalData.scrapedMenuText.menu, "Flower");
+    const concentrate = filterDuplicateItems(finalData.scrapedMenuText.menu, "Concentrate");
+    const carts = filterDuplicateItems(finalData.scrapedMenuText.menu, "Cartridge");
+    setDispensaryMenu({
+      flower: flower,
+      concentrate: concentrate,
+      carts: carts,
+    });
+    console.log(finalData.scrapedMenuText.link)
+    // setDispensaryLocation(finalData[0].location);
+    dispensaryLink = finalData.scrapedMenuText.link;
+    console.log(dispensaryLink)
+>>>>>>> ca5eae19690370cdeff77b78fe2d0804c4c09da6
     // await createLocationCart()
   }
 
