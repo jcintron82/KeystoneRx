@@ -60,8 +60,5 @@ export function CartPage() {
         }</div>
 
       )
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> ca5eae19690370cdeff77b78fe2d0804c4c09da6
+
